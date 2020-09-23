@@ -7,11 +7,11 @@ from extensions import extension_paths
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-destinationDirectory = pathlib.Path.home().joinpath('Desktop', 'Destination Folder')
+destinationDirectory = pathlib.Path.home().joinpath('Documents', 'Organized Downloads')
 
 class Watcher:
 
-    directoryToWatch = pathlib.Path.home().joinpath('Desktop', 'Junk Folder')
+    directoryToWatch = pathlib.Path.home().joinpath('Downloads')
 
     def __init__(self):
         self.observer = Observer()
@@ -23,7 +23,7 @@ class Watcher:
         
         try:
             while True:
-                time.sleep(5)
+                time.sleep(30)
         except:
             self.observer.stop()
             print("Error")
@@ -51,11 +51,8 @@ class Handler(FileSystemEventHandler):
             return None
         
         elif event.event_type == 'created':
-            # take action on created event
-            # get file extension
-            # compare file extension to extensions in the extensions.py file
-            # switch case 
-            # shutil.move(src=event.src_path, dst=destinationDirectory.joinpath(pathlib.Path(event.src_path).name))
+            # Take action on created event
+            
             print("Received created event")
 
             thisFile = pathlib.Path(event.src_path)
@@ -66,10 +63,11 @@ class Handler(FileSystemEventHandler):
                 shutil.move(src=event.src_path, dst=newDestination)
 
                 print("Moved file from", pathlib.Path(event.src_path).parent.name, "to", newDestination.parent.name)
-        
-        elif event.event_type == 'modified':
-            # take action on modified event
-            print("Received modified event")
+
+        # Uncomment this to start doing things when files are modified in the watched directory.
+        # elif event.event_type == 'modified':
+        #     # take action on modified event
+        #     print("Received modified event")
 
 if __name__ == '__main__':
     w = Watcher()
