@@ -2,6 +2,8 @@ import time
 import pathlib
 import shutil
 
+from extensions import extension_paths
+
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
@@ -28,6 +30,19 @@ class Watcher:
 
         self.observer.join()
 
+def renameFile(source: pathlib.Path, destinationPath: pathlib.Path):
+    if pathlib.Path(destinationPath / source.name).exists():
+            increment = 0
+            
+            while True:
+                increment += 1
+                newName = destinationPath / f'{source.stem}_{increment}{source.suffix}'
+
+                if not newName.exists():
+                    return newName
+    else:
+        return pathlib.Path(destinationPath / source.name)
+
 class Handler(FileSystemEventHandler):
 
     @staticmethod
@@ -37,9 +52,20 @@ class Handler(FileSystemEventHandler):
         
         elif event.event_type == 'created':
             # take action on created event
-            shutil.move(src=event.src_path, dst=destinationDirectory.joinpath(pathlib.Path(event.src_path).name))
+            # get file extension
+            # compare file extension to extensions in the extensions.py file
+            # switch case 
+            # shutil.move(src=event.src_path, dst=destinationDirectory.joinpath(pathlib.Path(event.src_path).name))
             print("Received created event")
-            print("Moved file from", pathlib.Path(event.src_path).parent.name, "to", destinationDirectory.name)
+
+            thisFile = pathlib.Path(event.src_path)
+
+            if thisFile.is_file() and thisFile.suffix.lower() in extension_paths:
+                newDestination = destinationDirectory.joinpath(extension_paths[thisFile.suffix.lower()], thisFile.name)
+                newDestination = renameFile(source=thisFile, destinationPath=newDestination.parent)
+                shutil.move(src=event.src_path, dst=newDestination)
+
+                print("Moved file from", pathlib.Path(event.src_path).parent.name, "to", newDestination.parent.name)
         
         elif event.event_type == 'modified':
             # take action on modified event
