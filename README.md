@@ -15,6 +15,3 @@ Instructions:
 - In order to run the script completely in the background, you have to use the pythonw.exe executable instead of python.exe
 - Save the steps and setup the task to run according to whatever trigger you'd like
 - Note: if you need to stop the script from running in the background, open your task manager (ctrl-shift-escape) and "End task" on python
-
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
